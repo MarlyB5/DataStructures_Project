@@ -177,14 +177,12 @@ public class Treap<K, V> {
         TNode parent = result.getParentNode();
         node.setKey(key);
         node.setValue(value);
-        if (result.getParentNode() == null) {
+        if (parent == null) {
             root = node;
+        } else if (result.isLeftChild()) {
+            parent.setLeft(node);
         } else {
-            if (result.isLeftChild()) {
-                parent.setLeft(node);
-            } else {
-                parent.setRight(node);
-            }
+            parent.setRight(node);
         }
 
         // Now we check heap invariant by repeatedly rotating the subtree as long as child priority > parent priority
