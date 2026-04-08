@@ -112,6 +112,14 @@ public class Treap<K, V> {
         return searchRecursive(key, 0);
     }
 
+    /* Swaps the nodes at the two given indices */
+    private void swap(int p, int q) {
+        TNode node1 = treap.get(p);
+        TNode node2 = treap.get(q);
+        treap.set(p, node2);
+        treap.set(q, node1);
+    }
+
     /* Adds the given node to the ArrayList at the specified index */
     /* Instantiates missing indices as null, if the index is not contiguous */
     private void addAtIndex(int index, TNode node) {
@@ -119,6 +127,24 @@ public class Treap<K, V> {
             treap.set(i, null);
         }
         treap.set(index, node);
+    }
+
+    /* Rotates the subtree starting at the root index to the right */
+    /* Used in conjunction with rotateLeft() to maintain the heap invariant */
+    private void rotateRight(int q) {
+        int p = getLeft(q); // Let P be Q's left child
+        int pRightChild = getRight(p); // Set Q's left child to be P's right child
+        swap(p, pRightChild);
+        swap(pRightChild, q); // Set P's right child to be Q
+    }
+
+    /* Rotates the subtree starting at the root index to the left */
+    /* Used in conjunction with rotateRight() to maintain the heap invariant */
+    private void rotateLeft(int p) {
+        int q = getRight(p); // Let Q be P's right child
+        int qLeftChild = getLeft(q); // Set P's right child to be Q's left child
+        swap(q, qLeftChild);
+        swap(qLeftChild, p); // Set Q's left child to be P
     }
 
     /* == Public Functions == */
@@ -144,5 +170,24 @@ public class Treap<K, V> {
         node.setKey(key);
         node.setValue(value);
         addAtIndex(index, node);
+
+        // Now we check heap invariant by rotating the subtree if necessary
+        int parent = getParent(index);
+        if (parent == -1) {
+            // Node is the root, so ignore it
+            return;
+        }
+
+        TNode parentNode = treap.get(parent);
+        if (node.getPriority() > parentNode.getPriority()) {
+            // Check which side the new node is on
+            if (getLeft(parent) == index) {
+                // New node is on the left, so rotate right
+                rotateRight(parent);
+            } else {
+                // New node is on the right, so rotate left
+                rotateLeft(parent);
+            }
+        }
     }
 }
