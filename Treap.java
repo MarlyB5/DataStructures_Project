@@ -197,4 +197,150 @@ public class Treap<K, V> {
             parent = node.getParent();
         }
     }
+
+    // get() - returns value if found, null if not
+    public V get(K key) {
+        SearchResult result = search(key);
+
+        // if node exists, return value
+        if (result.getNode() != null) {
+            return result.getValue();
+        }
+
+        // if node not found return null
+        return null;
+    }
+
+    // isEmpty() - returns true if tree has no nodes
+    public boolean isEmpty() {
+        // if root is null, tree is empty
+        return root == null;
+    }
+
+    // size() - returns how many nodes in tree
+    public int size() {
+        // starts counting from root
+        return countNodes (root);
+    }
+
+    // countNodes() - helper method for size()
+    // recursively counts all nodes
+    private int countNodes(TNode node) {
+        // if node is null, return 0
+        if (node == null)
+            return 0;
+
+        // count this node + all nodes on left + all nodes on right
+        return 1 + countNodes(node.getLeft()) + countNodes(node.getRight());
+    }
+
+    // inOrder() - prints keys in sorted order (smallest to largest)
+    public void inOrder() {
+        inOrderHelper(root);
+        System.out.println(); // new line after printing
+    }
+
+    // inOrderHelper() - recursive helper for inOrder()
+    // goes left, prints current node, goes right
+    private void inOrderHelper(TNode node) {
+        if (node == null)
+            return;
+
+        // goes left first (smaller keys)
+        inOrderHelper(node.getLeft());
+
+        // prints current nodes key and value
+        System.out.print(node.getKey() + "=" + node.getValue() + " ");
+
+        // then goes right (larger keys)
+        inOrderHelper(node.getRight());
+    }
+
+    // containsKey() - check if key exists
+    public boolean containsKey(K key) {
+        if (root == null) return false;
+        SearchResult result = search(key);
+        return result.getNode() != null;
+    }
+
+    // firstKey() - returns smallest key
+    public K firstKey() {
+        if (root == null) {
+            return null;
+        }
+
+        TNode current = root;
+        // goes left as far as possible
+        while (current.getLeft() != null) {
+            current = current.getLeft();
+        }
+
+        return current.getKey();
+    }
+
+    // lastKey() - return largest key
+    public K lastKey() {
+        if (root == null) {
+            return null;
+        }
+
+        TNode current = root;
+        // goes right as far as possible
+        while (current.getRight() != null) {
+            current = current.getRight();
+        }
+
+        return current.getKey();
+    }
+
+    // delete() - removes node with given key
+    public void delete(K key) {
+        // if tree is empty, nothing to delete
+        if (root == null) {
+            return;
+        }
+
+        // finds node to delete
+        SearchResult result = search(key);
+
+        // if not found, does nothing
+        if (result.getNode() == null) {
+            return;
+        }
+
+        TNode node = result.getNode();
+        // rotate node down until it becomes a leaf
+        while (node.getLeft() != null || node.getRight() != null) {
+            // if no left child, rotate left
+            if (node.getLeft() == null) {
+                rotateLeft(node);
+            }
+
+            // if no right child, rotate right
+            else if (node.getRight() == null) {
+                rotateRight(node);
+            }
+
+            // if both children exist, rotate with child with higher priority
+            else if (node.getLeft().getPriority() > node.getRight().getPriority()) {
+                rotateRight(node);
+            } else {
+                rotateLeft(node);
+            }
+        }
+
+        // now node is leaf - remove it
+        TNode parent = node.getParent();
+        // if node is the root
+        if (parent == null) {
+            root = null;
+        }
+
+        // else remove it from its parent
+        else if (parent.getLeft() == node) {
+            parent.left = null;
+        } else {
+            parent.right = null;
+        }
+    }
 }
