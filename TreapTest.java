@@ -110,7 +110,8 @@ public class TreapTest {
         assertEquals(7, treap.lastKey());
     }
 
-    // ---- delete() ----
+    // ---- delete() tests ----
+    // note: delete tests currently stuck due to rotation bug in rotateLeft/rotateRight
     @Test
     public void testDeleteOnEmptyTreap() {
         // shouldnt crash when tree is empty
