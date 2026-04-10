@@ -298,5 +298,14 @@ public class TreapTest {
         treap.inOrder(); // should print 1=one 2=two 3=three
     }
 
-
+    @Test
+    public void testToString() {
+        Treap<Integer, String> treap2 = new Treap<>(Integer::compare, 0);
+        for (int i = 0; i < 30; i++) {
+            treap2.insert(i + 1, "" + (i + 1));
+        }
+        System.out.println(treap2); // Should print the same tree each time, as we have fixed the seed
+        assertEquals(1, treap2.firstKey());
+        assertEquals(30, treap2.lastKey());
+    }
 }
