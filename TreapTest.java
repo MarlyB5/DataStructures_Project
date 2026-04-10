@@ -111,7 +111,6 @@ public class TreapTest {
     }
 
     // ---- delete() tests ----
-    // note: delete tests currently stuck due to rotation bug in rotateLeft/rotateRight
     @Test
     public void testDeleteOnEmptyTreap() {
         // shouldnt crash when tree is empty
@@ -182,34 +181,122 @@ public class TreapTest {
         assertEquals(0, treap.height());
     }
 
+    // ---- containsKey() tests ----
     @Test
-    public void testContainsKey() {
-        treap.insert(1, "one");
-        assertTrue(treap.containsKey(1));
+    public void testContainsExistingKey() {
+        treap.insert(7, "seven");
+        assertTrue(treap.containsKey(7));
+    }
+
+    @Test
+    public void testContainsNonExistingKey() {
+        treap.insert(7, "seven");
         assertFalse(treap.containsKey(99));
     }
 
     @Test
-    public void testInorderTraversal() {
-        treap.insert(1, "one");
-        treap.insert(4, "four");
-        treap.insert(9, "nine");
-        treap.insert(2, "two");
+    public void testContainsKeyAfterDelete() {
+        // after deleting, should return false for that key
         treap.insert(3, "three");
-        treap.insert(100, "hundred");
-        treap.inOrder();
-        assertEquals(1, treap.firstKey());
-        assertEquals(100, treap.lastKey());
+        treap.delete(3);
+        assertFalse(treap.containsKey(3));
     }
 
     @Test
-    public void testToString() {
-        Treap<Integer, String> treap2 = new Treap<>(Integer::compare, 0);
-        for (int i = 0; i < 30; i++) {
-            treap2.insert(i + 1, "" + (i + 1));
-        }
-        System.out.println(treap2);
-        assertEquals(1, treap2.firstKey());
-        assertEquals(30, treap2.lastKey());
+    public void testContainsKeyOnEmptyTreap() {
+        // should return false and not crash
+        assertFalse(treap.containsKey(1));
     }
+
+    // ---- isEmpty() tests ----
+    @Test
+    public void testNewIsEmpty() {
+        // new treap should be empty
+        assertTrue(treap.isEmpty());
+    }
+
+    @Test
+    public void testEmptyAfterDeleteAll() {
+        // insert then delete, should be empty again
+        treap.insert(1, "one");
+        treap.delete(1);
+        assertTrue(treap.isEmpty());
+    }
+
+    @Test
+    public void testEmptyAfterInsert() {
+        // after inserting, should not be empty
+        treap.insert(1, "one");
+        assertFalse(treap.isEmpty());
+    }
+
+    // ---- firstKey() tests ----
+    @Test
+    public void testFirstKey() {
+        treap.insert(5, "five");
+        treap.insert(2, "two");
+        treap.insert(8, "eight");
+        // smallest key should be 2
+        assertEquals(2, treap.firstKey());
+    }
+
+    @Test
+    public void testFirstKeyOnEmptyTreap() {
+        // should return null and not crash
+        assertNull(treap.firstKey());
+    }
+
+    @Test
+    public void testFirstKeyAfterDeleteSmallest() {
+        // after deleting smallest, next smallest should be returned
+        treap.insert(5, "five");
+        treap.insert(2, "two");
+        treap.insert(8, "eight");
+        treap.delete(2);
+        assertEquals(5, treap.firstKey());
+    }
+
+    // ---- lastKey() tests ----
+    @Test
+    public void testLastKey() {
+        treap.insert(5, "five");
+        treap.insert(2, "two");
+        treap.insert(8, "eight");
+        // largest key should be 8
+        assertEquals(8, treap.lastKey());
+    }
+
+    @Test
+    public void testLastKeyOnEmptyTreap() {
+        // should return null and not crash
+        assertNull(treap.lastKey());
+    }
+
+    @Test
+    public void testLastKeyAfterDeleteLargest() {
+        // after deleting largest, second largest should be returned
+        treap.insert(5, "five");
+        treap.insert(2, "two");
+        treap.insert(8, "eight");
+        treap.delete(8);
+        assertEquals(5, treap.lastKey());
+    }
+
+    // ---- inOrder() tests ----
+    @Test
+    public void testInOrderOnEmptyTreap() {
+        // should not crash on empty treap
+        treap.inOrder();
+    }
+
+    @Test
+    public void testInOrderDoesNotCrash() {
+        // check inOrder runs without errors
+        treap.insert(3, "three");
+        treap.insert(1, "one");
+        treap.insert(2, "two");
+        treap.inOrder(); // should print 1=one 2=two 3=three
+    }
+
+
 }
