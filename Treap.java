@@ -173,15 +173,14 @@ public class Treap<K, V> {
     private void rotateRight(TNode q) {
         TNode qParent = q.getParent();
         TNode p = q.getLeft(); // Let P be Q's left child
-        if (p != null) {
-            TNode pRightChild = p.getRight(); // Set Q's left child to be P's right child
-            q.setLeft(pRightChild);
-            p.setRight(q); // Set P's right child to be Q
-        }
+        TNode pRightChild = p.getRight(); // Set Q's left child to be P's right child
+        q.setLeft(pRightChild);
+        p.setRight(q); // Set P's right child to be Q
 
         // Rebuild connection to rest of tree
         if (qParent == null) {
             root = p;
+            p.setParent(null);
         } else if (qParent.getLeft() == q) {
             qParent.setLeft(p);
         } else {
@@ -194,15 +193,14 @@ public class Treap<K, V> {
     private void rotateLeft(TNode p) {
         TNode pParent = p.getParent();
         TNode q = p.getRight(); // Let Q be P's right child
-        if (q != null) {
-            TNode qLeftChild = q.getLeft(); // Set P's right child to be Q's left child
-            p.setRight(qLeftChild);
-            q.setLeft(p); // Set Q's left child to be P
-        }
+        TNode qLeftChild = q.getLeft(); // Set P's right child to be Q's left child
+        p.setRight(qLeftChild);
+        q.setLeft(p); // Set Q's left child to be P
 
         // Rebuild connection to rest of tree
         if (pParent == null) {
-            root = p;
+            root = q;
+            q.setParent(null);
         } else if (pParent.getLeft() == p) {
             pParent.setLeft(q);
         } else {
