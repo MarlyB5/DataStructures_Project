@@ -41,6 +41,14 @@ public class TreapTest {
         assertNull(treap.get(10));
     }
 
+    @Test
+    public void testGetAfterUpdatingSameKey() {
+        // inserting the same key with a new value should overwrite old value
+        treap.insert(1, "one");
+        treap.insert(1, "ONE");
+        assertEquals("ONE", treap.get(1));
+    }
+
     // ---- size() tests ----
     @Test
     public void testSizeAfterInsert() {
@@ -64,6 +72,14 @@ public class TreapTest {
     public void testSizeWhenEmpty() {
         // empty treap size should be 0
         assertEquals(0, treap.size());
+    }
+
+    @Test
+    public void testSizeAfterDuplicate() {
+        // inserting same key twice shouldnt increase size
+        treap.insert(3, "three");
+        treap.insert(3, "THREE");
+        assertEquals(1, treap.size());
     }
 
     // ---- ordering tests ----
@@ -93,4 +109,76 @@ public class TreapTest {
         assertEquals(3, treap.firstKey());
         assertEquals(7, treap.lastKey());
     }
+
+    // ---- delete() ----
+    @Test
+    public void testDeleteOnEmptyTreap() {
+        // shouldnt crash when tree is empty
+        treap.delete(1);
+        assertEquals(0, treap.size());
+    }
+
+    @Test
+    public void testDeleteOnlyNode() {
+        // deleting the only node should make tree empty
+        treap.insert(1, "one");
+        treap.delete(1);
+        assertTrue(treap.isEmpty());
+    }
+
+    @Test
+    public void testDeleteKeyThatDoesNotExist() {
+        // deleting a key that was never inserted should change nothing
+        treap.insert(1, "one");
+        treap.delete(99);
+        assertEquals(1, treap.size());
+    }
+
+    @Test
+    public void testDeleteNodeWithTwoChildren() {
+        // delete a node that has two children, rest of tree should still work
+        treap.insert(5, "five");
+        treap.insert(3, "three");
+        treap.insert(7, "seven");
+        treap.delete(5);
+        assertNull(treap.get(5));
+        assertEquals(2, treap.size());
+        // other nodes should still be there
+        assertNotNull(treap.get(3));
+        assertNotNull(treap.get(7));
+    }
+
+    @Test
+    public void testDeleteLeafNode() {
+        treap.insert(5, "five");
+        treap.insert(3, "three");
+        treap.delete(3);
+        assertNull(treap.get(3));
+        assertEquals(1, treap.size());
+    }
+
+    // ---- height() tests ----
+    @Test
+    public void testHeightEmptyTreap() {
+        // empty treap should have height -1
+        assertEquals(-1, treap.height());
+    }
+
+    @Test
+    public void testHeightIncreasesWithNodes() {
+        // adding more nodes should increase height
+        treap.insert(5, "five");
+        treap.insert(3, "three");
+        treap.insert(7, "seven");
+        // height should be at least 1
+        assertTrue(treap.height() >= 1);
+    }
+
+    @Test
+    public void testHeightSingleNode() {
+        // single node treap should have height 0
+        treap.insert(1, "one");
+        assertEquals(0, treap.height());
+    }
+
 }

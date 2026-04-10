@@ -146,6 +146,19 @@ public class Treap<K, V> {
         return 1 + countNodes(node.getLeft()) + countNodes(node.getRight());
     }
 
+    // heightHelper() - recursive helper for height()
+    private int heightHelper(TNode node) {
+        // empty tree has height -1
+        if (node == null) return -1;
+
+        // get height of left and right subtrees
+        int leftHeight = heightHelper(node.getLeft());
+        int rightHeight = heightHelper(node.getRight());
+
+        // return the bigger side plus 1 for the current node
+        return 1 + Math.max(leftHeight, rightHeight);
+    }
+
     /* == Private Functions == */
 
     /* Searches for a specific key and returns a SearchResult object based on the result */
@@ -354,4 +367,10 @@ public class Treap<K, V> {
             parent.right = null;
         }
     }
+
+    // height() - returns the height of the treap (number of edges from root down to the deepest leaf)
+    public int height() {
+        return heightHelper(root);
+    }
+
 }
