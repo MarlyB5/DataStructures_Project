@@ -34,11 +34,15 @@ public class Treap<K, V> {
         public void setParent(TNode parent) {this.parent = parent;}
         public void setLeft(TNode left) {
             this.left = left;
-            left.parent = this;
+            if (left != null) {
+                left.parent = this;
+            }
         }
         public void setRight(TNode right) {
             this.right = right;
-            right.parent = this;
+            if (right != null) {
+                right.parent = this;
+            }
         }
     }
 
@@ -95,6 +99,9 @@ public class Treap<K, V> {
     private SearchResult searchRecursive(K key, TNode root, TNode previous) {
         // Return null and the theoretical position
         if (root == null) {
+            if (previous == null) {
+                return new SearchResult(null, false);
+            }
             int comp = comparator.compare(key, previous.getKey()); // Left if comp < 0
             return new SearchResult(previous, (comp < 0));
         }
@@ -112,6 +119,33 @@ public class Treap<K, V> {
         }
     }
 
+    // inOrderHelper() - recursive helper for inOrder()
+    // goes left, prints current node, goes right
+    private void inOrderHelper(TNode node) {
+        if (node == null)
+            return;
+
+        // goes left first (smaller keys)
+        inOrderHelper(node.getLeft());
+
+        // prints current nodes key and value
+        System.out.print(node.getKey() + "=" + node.getValue() + " ");
+
+        // then goes right (larger keys)
+        inOrderHelper(node.getRight());
+    }
+
+    // countNodes() - helper method for size()
+    // recursively counts all nodes
+    private int countNodes(TNode node) {
+        // if node is null, return 0
+        if (node == null)
+            return 0;
+
+        // count this node + all nodes on left + all nodes on right
+        return 1 + countNodes(node.getLeft()) + countNodes(node.getRight());
+    }
+
     /* == Private Functions == */
 
     /* Searches for a specific key and returns a SearchResult object based on the result */
@@ -126,9 +160,11 @@ public class Treap<K, V> {
     private void rotateRight(TNode q) {
         TNode qParent = q.getParent();
         TNode p = q.getLeft(); // Let P be Q's left child
-        TNode pRightChild = p.getRight(); // Set Q's left child to be P's right child
-        q.setLeft(pRightChild);
-        p.setRight(q); // Set P's right child to be Q
+        if (p != null) {
+            TNode pRightChild = p.getRight(); // Set Q's left child to be P's right child
+            q.setLeft(pRightChild);
+            p.setRight(q); // Set P's right child to be Q
+        }
 
         // Rebuild connection to rest of tree
         if (qParent == null) {
@@ -145,9 +181,11 @@ public class Treap<K, V> {
     private void rotateLeft(TNode p) {
         TNode pParent = p.getParent();
         TNode q = p.getRight(); // Let Q be P's right child
-        TNode qLeftChild = q.getLeft(); // Set P's right child to be Q's left child
-        p.setRight(qLeftChild);
-        q.setLeft(p); // Set Q's left child to be P
+        if (q != null) {
+            TNode qLeftChild = q.getLeft(); // Set P's right child to be Q's left child
+            p.setRight(qLeftChild);
+            q.setLeft(p); // Set Q's left child to be P
+        }
 
         // Rebuild connection to rest of tree
         if (pParent == null) {
@@ -220,40 +258,13 @@ public class Treap<K, V> {
     // size() - returns how many nodes in tree
     public int size() {
         // starts counting from root
-        return countNodes (root);
-    }
-
-    // countNodes() - helper method for size()
-    // recursively counts all nodes
-    private int countNodes(TNode node) {
-        // if node is null, return 0
-        if (node == null)
-            return 0;
-
-        // count this node + all nodes on left + all nodes on right
-        return 1 + countNodes(node.getLeft()) + countNodes(node.getRight());
+        return countNodes(root);
     }
 
     // inOrder() - prints keys in sorted order (smallest to largest)
     public void inOrder() {
         inOrderHelper(root);
         System.out.println(); // new line after printing
-    }
-
-    // inOrderHelper() - recursive helper for inOrder()
-    // goes left, prints current node, goes right
-    private void inOrderHelper(TNode node) {
-        if (node == null)
-            return;
-
-        // goes left first (smaller keys)
-        inOrderHelper(node.getLeft());
-
-        // prints current nodes key and value
-        System.out.print(node.getKey() + "=" + node.getValue() + " ");
-
-        // then goes right (larger keys)
-        inOrderHelper(node.getRight());
     }
 
     // containsKey() - check if key exists
