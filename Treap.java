@@ -362,9 +362,9 @@ public class Treap<K, V> {
 
         // else remove it from its parent
         else if (parent.getLeft() == node) {
-            parent.left = null;
+            parent.setLeft(null);
         } else {
-            parent.right = null;
+            parent.setRight(null);
         }
     }
 
