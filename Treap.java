@@ -1,5 +1,4 @@
-import java.util.Comparator;
-import java.util.Random;
+import java.util.*;
 
 /* IMPORTANT INFO
  * 1. The Treap is a max-heap, meaning the highest priority is at the root
@@ -19,7 +18,7 @@ public class Treap<K, V> {
         private TNode right;
 
         public TNode() {
-            priority = generator.nextInt();
+            priority = generator.nextInt(0, 255);
         }
 
         public K getKey() {return key;}
@@ -74,6 +73,195 @@ public class Treap<K, V> {
         public Boolean isLeftChild() {return isLeftChild;}
     }
 
+    /* == Nested Printer Class == */
+    /* A binary tree printer, taken from our lab work and modified to work with the treap */
+    public class TreapPrinter {
+
+        private final boolean squareBranches = true;
+        private final boolean lrAgnostic = false;
+        private final int hspace = 2;
+        //private int tspace = 1;
+
+        public TreapPrinter() {
+        }
+
+        public String print() {
+            List<TreeLine> treeLines = buildTreeLines(root);
+            return printTreeLines(treeLines);
+        }
+
+        private static class TreeLine {
+            String line;
+            int leftOffset;
+            int rightOffset;
+
+            TreeLine(String line, int leftOffset, int rightOffset) {
+                this.line = line;
+                this.leftOffset = leftOffset;
+                this.rightOffset = rightOffset;
+            }
+        }
+
+        private String printTreeLines(List<TreeLine> treeLines) {
+            StringBuilder sb = new StringBuilder();
+
+            if (treeLines.size() > 0) {
+                int minLeftOffset = minLeftOffset(treeLines);
+                int maxRightOffset = maxRightOffset(treeLines);
+                for (TreeLine treeLine : treeLines) {
+                    //System.out.println("line: " + treeLine.line);
+                    int leftSpaces = -(minLeftOffset - treeLine.leftOffset);
+                    int rightSpaces = maxRightOffset - treeLine.rightOffset;
+                    //outStream.println(spaces(leftSpaces) + treeLine.line + spaces(rightSpaces));
+                    sb.append(spaces(leftSpaces)).append(treeLine.line).append(spaces(rightSpaces));
+                    sb.append("\n");
+                }
+            }
+            return sb.toString();
+        }
+
+        private static int minLeftOffset(List<TreeLine> treeLines) {
+            return treeLines.stream().mapToInt(l -> l.leftOffset).min().orElse(0);
+        }
+
+        private static int maxRightOffset(List<TreeLine> treeLines) {
+            return treeLines.stream().mapToInt(l -> l.rightOffset).max().orElse(0);
+        }
+
+        private List<TreeLine> buildTreeLines(TNode root) {
+            if (root == null) {
+                //System.out.println("root: " + Collections.emptyList());
+                return Collections.emptyList();
+            } else {
+                String rootLabel = root.getKey() + " (" + root.getPriority() + ")";//getLabel.apply(root);
+                //System.out.println("rootLabel: " + rootLabel);
+
+                //List<TreeLine> leftTreeLines = buildTreeLines(getLeft.apply(root));
+                //List<TreeLine> rightTreeLines = buildTreeLines(getRight.apply(root));
+                List<TreeLine> leftTreeLines = buildTreeLines(root.getLeft());
+                List<TreeLine> rightTreeLines = buildTreeLines(root.getRight());
+
+                int leftCount = leftTreeLines.size();
+                int rightCount = rightTreeLines.size();
+                int minCount = Math.min(leftCount, rightCount);
+                int maxCount = Math.max(leftCount, rightCount);
+
+                // The left and right subtree print representations have jagged edges, and we
+                // essentially we have to
+                // figure out how close together we can bring the left and right roots so that
+                // the edges just meet on
+                // some line. Then we add hspace, and round up to next odd number.
+                int maxRootSpacing = 0;
+                for (int i = 0; i < minCount; i++) {
+                    int spacing = leftTreeLines.get(i).rightOffset - rightTreeLines.get(i).leftOffset;
+                    if (spacing > maxRootSpacing)
+                        maxRootSpacing = spacing;
+                }
+                int rootSpacing = maxRootSpacing + hspace;
+                if (rootSpacing % 2 == 0)
+                    rootSpacing++;
+                // rootSpacing is now the number of spaces between the roots of the two subtrees
+
+                List<TreeLine> allTreeLines = new ArrayList<>();
+
+                // add the root and the two branches leading to the subtrees
+
+                allTreeLines.add(new TreeLine(rootLabel, -(rootLabel.length() - 1) / 2, rootLabel.length() / 2));
+
+                // also calculate offset adjustments for left and right subtrees
+                int leftTreeAdjust = 0;
+                int rightTreeAdjust = 0;
+
+                if (leftTreeLines.isEmpty()) {
+                    if (!rightTreeLines.isEmpty()) {
+                        // there's a right subtree only
+                        if (squareBranches) {
+                            if (lrAgnostic) {
+                                allTreeLines.add(new TreeLine("\u2502", 0, 0));
+                            } else {
+                                allTreeLines.add(new TreeLine("\u2514\u2510", 0, 1));
+                                rightTreeAdjust = 1;
+                            }
+                        } else {
+                            allTreeLines.add(new TreeLine("\\", 1, 1));
+                            rightTreeAdjust = 2;
+                        }
+                    }
+                } else if (rightTreeLines.isEmpty()) {
+                    // there's a left subtree only
+                    if (squareBranches) {
+                        if (lrAgnostic) {
+                            allTreeLines.add(new TreeLine("\u2502", 0, 0));
+                        } else {
+                            allTreeLines.add(new TreeLine("\u250C\u2518", -1, 0));
+                            leftTreeAdjust = -1;
+                        }
+                    } else {
+                        allTreeLines.add(new TreeLine("/", -1, -1));
+                        leftTreeAdjust = -2;
+                    }
+                } else {
+                    // there's a left and right subtree
+                    if (squareBranches) {
+                        int adjust = (rootSpacing / 2) + 1;
+                        String horizontal = String.join("", Collections.nCopies(rootSpacing / 2, "\u2500"));
+                        String branch = "\u250C" + horizontal + "\u2534" + horizontal + "\u2510";
+                        allTreeLines.add(new TreeLine(branch, -adjust, adjust));
+                        rightTreeAdjust = adjust;
+                        leftTreeAdjust = -adjust;
+                    } else {
+                        if (rootSpacing == 1) {
+                            allTreeLines.add(new TreeLine("/ \\", -1, 1));
+                            rightTreeAdjust = 2;
+                            leftTreeAdjust = -2;
+                        } else {
+                            for (int i = 1; i < rootSpacing; i += 2) {
+                                String branches = "/" + spaces(i) + "\\";
+                                allTreeLines.add(new TreeLine(branches, -((i + 1) / 2), (i + 1) / 2));
+                            }
+                            rightTreeAdjust = (rootSpacing / 2) + 1;
+                            leftTreeAdjust = -((rootSpacing / 2) + 1);
+                        }
+                    }
+                }
+
+                // now add joined lines of subtrees, with appropriate number of separating
+                // spaces, and adjusting offsets
+
+                for (int i = 0; i < maxCount; i++) {
+                    TreeLine leftLine, rightLine;
+                    if (i >= leftTreeLines.size()) {
+                        // nothing remaining on left subtree
+                        rightLine = rightTreeLines.get(i);
+                        rightLine.leftOffset += rightTreeAdjust;
+                        rightLine.rightOffset += rightTreeAdjust;
+                        allTreeLines.add(rightLine);
+                    } else if (i >= rightTreeLines.size()) {
+                        // nothing remaining on right subtree
+                        leftLine = leftTreeLines.get(i);
+                        leftLine.leftOffset += leftTreeAdjust;
+                        leftLine.rightOffset += leftTreeAdjust;
+                        allTreeLines.add(leftLine);
+                    } else {
+                        leftLine = leftTreeLines.get(i);
+                        rightLine = rightTreeLines.get(i);
+                        int adjustedRootSpacing = (rootSpacing == 1 ? (squareBranches ? 1 : 3) : rootSpacing);
+                        TreeLine combined = new TreeLine(
+                                leftLine.line + spaces(adjustedRootSpacing - leftLine.rightOffset + rightLine.leftOffset)
+                                        + rightLine.line,
+                                leftLine.leftOffset + leftTreeAdjust, rightLine.rightOffset + rightTreeAdjust);
+                        allTreeLines.add(combined);
+                    }
+                }
+                return allTreeLines;
+            }
+        }
+
+        private static String spaces(int n) {
+            return String.join("", Collections.nCopies(n, " "));
+        }
+    }
+
     /* == Instance Variables == */
     private final Random generator;
     private TNode root;
@@ -100,7 +288,8 @@ public class Treap<K, V> {
         // Return null and the theoretical position
         if (root == null) {
             if (previous == null) {
-                return new SearchResult(null, false);
+                // Tree is empty, so return an empty result
+                return new SearchResult((V) null, null);
             }
             int comp = comparator.compare(key, previous.getKey()); // Left if comp < 0
             return new SearchResult(previous, (comp < 0));
@@ -129,7 +318,7 @@ public class Treap<K, V> {
         inOrderHelper(node.getLeft());
 
         // prints current nodes key and value
-        System.out.print(node.getKey() + "=" + node.getValue() + " ");
+        System.out.print(node.getKey() + " = " + node.getValue() + " ");
 
         // then goes right (larger keys)
         inOrderHelper(node.getRight());
@@ -371,4 +560,10 @@ public class Treap<K, V> {
         return heightHelper(root);
     }
 
+    /* Prints a string representation of the treap, showing each node's key and priority */
+    @Override
+    public String toString() {
+        TreapPrinter printer = new TreapPrinter();
+        return printer.print();
+    }
 }

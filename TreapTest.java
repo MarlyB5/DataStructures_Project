@@ -182,4 +182,34 @@ public class TreapTest {
         assertEquals(0, treap.height());
     }
 
+    @Test
+    public void testContainsKey() {
+        treap.insert(1, "one");
+        assertTrue(treap.containsKey(1));
+        assertFalse(treap.containsKey(99));
+    }
+
+    @Test
+    public void testInorderTraversal() {
+        treap.insert(1, "one");
+        treap.insert(4, "four");
+        treap.insert(9, "nine");
+        treap.insert(2, "two");
+        treap.insert(3, "three");
+        treap.insert(100, "hundred");
+        treap.inOrder();
+        assertEquals(1, treap.firstKey());
+        assertEquals(100, treap.lastKey());
+    }
+
+    @Test
+    public void testToString() {
+        Treap<Integer, String> treap2 = new Treap<>(Integer::compare, 0);
+        for (int i = 0; i < 30; i++) {
+            treap2.insert(i + 1, "" + (i + 1));
+        }
+        System.out.println(treap2);
+        assertEquals(1, treap2.firstKey());
+        assertEquals(30, treap2.lastKey());
+    }
 }
