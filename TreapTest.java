@@ -2,6 +2,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
+
 public class TreapTest {
     // treap used in all tests, integer keys and string values
     private Treap<Integer, String> treap;
@@ -296,6 +300,9 @@ public class TreapTest {
         treap.insert(1, "one");
         treap.insert(2, "two");
         treap.inOrder(); // should print 1=one 2=two 3=three
+
+        assertEquals(Arrays.asList(1, 2, 3), treap.inOrderKeys());
+
     }
 
     @Test

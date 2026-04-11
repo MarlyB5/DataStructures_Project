@@ -2,7 +2,7 @@ import java.util.*;
 
 /* IMPORTANT INFO
  * 1. The Treap is a max-heap, meaning the highest priority is at the root
- * 2. Priority takes precedence over keys when it comes to ordering
+ * 2. Keys determine binary tree ordering, so the priority is used to determine the order
  * 3. The rotation algorithm is described here: https://en.wikipedia.org/wiki/Tree_rotation#Inorder_invariance
  */
 
@@ -18,7 +18,7 @@ public class Treap<K, V> {
         private TNode right;
 
         public TNode() {
-            priority = generator.nextInt(0, 255);
+            priority = generator.nextInt(Integer.MAX_VALUE);
         }
 
         public K getKey() {return key;}
@@ -105,7 +105,7 @@ public class Treap<K, V> {
         private String printTreeLines(List<TreeLine> treeLines) {
             StringBuilder sb = new StringBuilder();
 
-            if (treeLines.size() > 0) {
+            if (!treeLines.isEmpty()) {
                 int minLeftOffset = minLeftOffset(treeLines);
                 int maxRightOffset = maxRightOffset(treeLines);
                 for (TreeLine treeLine : treeLines) {
@@ -266,6 +266,7 @@ public class Treap<K, V> {
     private final Random generator;
     private TNode root;
     private final Comparator<K> comparator;
+    private int size;
 
     /* == Constructors == */
 
@@ -274,6 +275,7 @@ public class Treap<K, V> {
         root = null;
         generator = new Random(System.nanoTime());
         comparator = keyComp;
+        size = 0;
     }
 
     /* Constructs a Treap with the given RNG seed for priority generation */
@@ -281,6 +283,7 @@ public class Treap<K, V> {
         root = null;
         generator = new Random(seed);
         comparator = keyComp;
+        size = 0;
     }
 
     /* == Recursive Helpers == */
@@ -310,19 +313,25 @@ public class Treap<K, V> {
 
     // inOrderHelper() - recursive helper for inOrder()
     // goes left, prints current node, goes right
-    private void inOrderHelper(TNode node) {
+    private void inOrderHelper(TNode node, List<K> result) {
         if (node == null)
             return;
 
         // goes left first (smaller keys)
-        inOrderHelper(node.getLeft());
+        inOrderHelper(node.getLeft() , result);
 
         // prints current nodes key and value
-        System.out.print(node.getKey() + " = " + node.getValue() + " ");
-
+        result.add(node.getKey());
         // then goes right (larger keys)
-        inOrderHelper(node.getRight());
+        inOrderHelper(node.getRight(), result);
     }
+
+    public List<K> inOrderKeys() {
+        List<K> result = new ArrayList<>();
+        inOrderHelper(root, result);
+        return result;
+    }
+
 
     // countNodes() - helper method for size()
     // recursively counts all nodes
@@ -434,6 +443,7 @@ public class Treap<K, V> {
             }
             parent = node.getParent();
         }
+        size++;
     }
 
     // get() - returns value if found, null if not
@@ -458,14 +468,13 @@ public class Treap<K, V> {
     // size() - returns how many nodes in tree
     public int size() {
         // starts counting from root
-        return countNodes(root);
+        return size;
     }
 
     // inOrder() - prints keys in sorted order (smallest to largest)
     public void inOrder() {
-        inOrderHelper(root);
-        System.out.println(); // new line after printing
-    }
+    System.out.println(inOrderKeys());
+     }
 
     // containsKey() - check if key exists
     public boolean containsKey(K key) {
@@ -553,6 +562,7 @@ public class Treap<K, V> {
         } else {
             parent.setRight(null);
         }
+        size --;
     }
 
     // height() - returns the height of the treap (number of edges from root down to the deepest leaf)
