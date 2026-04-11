@@ -45,6 +45,13 @@ public class Treap<K, V> {
         }
     }
 
+    //helper to validate the key
+    private void validate(K key){
+        if(key == null){
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+    }
+
     /* == Nested Search Result Class == */
     /* Contains the value of the search result (null if not found) as well as additional information used for inserts */
     private class SearchResult {
@@ -412,6 +419,7 @@ public class Treap<K, V> {
 
     /* Inserts the value into the Treap at the specified key */
     public void insert(K key, V value) {
+        validate(key);
         SearchResult result = search(key);
 
         // Node already exists; update it
@@ -450,6 +458,7 @@ public class Treap<K, V> {
 
     // get() - returns value if found, null if not
     public V get(K key) {
+        validate(key);
         SearchResult result = search(key);
 
         // if node exists, return value
@@ -480,6 +489,7 @@ public class Treap<K, V> {
 
     // containsKey() - check if key exists
     public boolean containsKey(K key) {
+        validate(key);
         if (root == null) return false;
         SearchResult result = search(key);
         return result.getNode() != null;
@@ -517,6 +527,7 @@ public class Treap<K, V> {
 
     // delete() - removes node with given key
     public V remove(K key) {
+        validate(key);
         if (root == null) {
             return null;
         }
