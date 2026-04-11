@@ -2,8 +2,9 @@ import java.util.*;
 
 /* IMPORTANT INFO
  * 1. The Treap is a max-heap, meaning the highest priority is at the root
- * 2. Keys determine binary tree ordering, so the priority is used to determine the order
- * 3. The rotation algorithm is described here: https://en.wikipedia.org/wiki/Tree_rotation#Inorder_invariance
+ * 2. Keys determine the binary search tree placements
+ * 3. Priority will determine whether the rotations are needed to maintain the heap invariant
+ * 4. The rotation algorithm is described here: https://en.wikipedia.org/wiki/Tree_rotation#Inorder_invariance
  */
 
 public class Treap<K, V> {
@@ -45,12 +46,6 @@ public class Treap<K, V> {
         }
     }
 
-    //helper to validate the key
-    private void validate(K key){
-        if(key == null){
-            throw new IllegalArgumentException("Key cannot be null");
-        }
-    }
 
     /* == Nested Search Result Class == */
     /* Contains the value of the search result (null if not found) as well as additional information used for inserts */
@@ -327,7 +322,7 @@ public class Treap<K, V> {
         // goes left first (smaller keys)
         inOrderHelper(node.getLeft() , result);
 
-        // prints current nodes key and value
+        // store current noes key
         result.add(node.getKey());
         // then goes right (larger keys)
         inOrderHelper(node.getRight(), result);
@@ -367,6 +362,13 @@ public class Treap<K, V> {
     }
 
     /* == Private Functions == */
+
+    // validate() - throws an exception if the key is null
+    private void validate(K key){
+        if(key == null){
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+    }
 
     /* Searches for a specific key and returns a SearchResult object based on the result */
     /* If the key is found, the value and node will be returned */
