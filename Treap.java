@@ -312,7 +312,7 @@ public class Treap<K, V> {
     }
 
     // inOrderHelper() - recursive helper for inOrder()
-    // goes left, prints current node, goes right
+    // visits nodes in the order of their keys and stores the keys in a list (result)
     private void inOrderHelper(TNode node, List<K> result) {
         if (node == null)
             return;
@@ -332,9 +332,11 @@ public class Treap<K, V> {
         return result;
     }
 
+// REMOVE LATER KEEPING FOR DEBUGGING PURPOSES
+
 
     // countNodes() - helper method for size()
-    // recursively counts all nodes
+    /* recursively counts all nodes
     private int countNodes(TNode node) {
         // if node is null, return 0
         if (node == null)
@@ -343,7 +345,7 @@ public class Treap<K, V> {
         // count this node + all nodes on left + all nodes on right
         return 1 + countNodes(node.getLeft()) + countNodes(node.getRight());
     }
-
+*/
     // heightHelper() - recursive helper for height()
     private int heightHelper(TNode node) {
         // empty tree has height -1
@@ -514,55 +516,46 @@ public class Treap<K, V> {
     }
 
     // delete() - removes node with given key
-    public void delete(K key) {
-        // if tree is empty, nothing to delete
+    public V remove(K key) {
         if (root == null) {
-            return;
+            return null;
         }
 
-        // finds node to delete
         SearchResult result = search(key);
-
-        // if not found, does nothing
         if (result.getNode() == null) {
-            return;
+            return null;
         }
 
         TNode node = result.getNode();
-        // rotate node down until it becomes a leaf
+        V oldValue = node.getValue();
+
         while (node.getLeft() != null || node.getRight() != null) {
-            // if no left child, rotate left
             if (node.getLeft() == null) {
                 rotateLeft(node);
-            }
-
-            // if no right child, rotate right
-            else if (node.getRight() == null) {
+            } else if (node.getRight() == null) {
                 rotateRight(node);
-            }
-
-            // if both children exist, rotate with child with higher priority
-            else if (node.getLeft().getPriority() > node.getRight().getPriority()) {
+            } else if (node.getLeft().getPriority() > node.getRight().getPriority()) {
                 rotateRight(node);
             } else {
                 rotateLeft(node);
             }
         }
 
-        // now node is leaf - remove it
         TNode parent = node.getParent();
-        // if node is the root
         if (parent == null) {
             root = null;
-        }
-
-        // else remove it from its parent
-        else if (parent.getLeft() == node) {
+        } else if (parent.getLeft() == node) {
             parent.setLeft(null);
         } else {
             parent.setRight(null);
         }
-        size --;
+
+        size--;
+        return oldValue;
+    }
+    // simple wrapper for compatability for tests etc.
+    public void delete(K key){
+        remove(key);
     }
 
     // height() - returns the height of the treap (number of edges from root down to the deepest leaf)
