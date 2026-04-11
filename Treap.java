@@ -274,6 +274,9 @@ public class Treap<K, V> {
 
     /* Constructs an empty Treap with the given key comparator */
     public Treap(Comparator<K> keyComp) {
+        if (keyComp == null) {
+            throw new IllegalArgumentException("Key comparator cannot be null");
+        }
         root = null;
         generator = new Random(System.nanoTime());
         comparator = keyComp;
@@ -282,6 +285,9 @@ public class Treap<K, V> {
 
     /* Constructs a Treap with the given RNG seed for priority generation */
     public Treap(Comparator<K> keyComp, long seed) {
+        if (keyComp == null) {
+            throw new IllegalArgumentException("Key comparator cannot be null");
+        }
         root = null;
         generator = new Random(seed);
         comparator = keyComp;
@@ -419,6 +425,10 @@ public class Treap<K, V> {
 
     /* == Public Functions == */
 
+    //Wrapper for insert() - makes testing cleaner
+    public void put(K key, V value) {
+       insert(key, value);
+    }
     /* Inserts the value into the Treap at the specified key */
     public void insert(K key, V value) {
         validate(key);
