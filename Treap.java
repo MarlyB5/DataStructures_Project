@@ -319,6 +319,25 @@ public class Treap<K, V> {
         }
     }
 
+    /* inOrderEntriesHelper() - recursive helper for inOrderEntries()
+     * visits nodes in sorted key order and stores each key-value pair in result
+     */
+    private void inOrderEntriesHelper(TNode node, List<Map.Entry<K, V>> result) {
+        if (node == null) {
+            return;
+        }
+
+        // visit left subtree first
+        inOrderEntriesHelper(node.getLeft(), result);
+
+        // store current node as a key-value entry
+        result.add(new AbstractMap.SimpleEntry<>(node.getKey(), node.getValue()));
+
+        // visit right subtree
+        inOrderEntriesHelper(node.getRight(), result);
+    }
+
+
     // inOrderHelper() - recursive helper for inOrder()
     // visits nodes in the order of their keys and stores the keys in a list (result)
     private void inOrderHelper(TNode node, List<K> result) {
@@ -340,20 +359,6 @@ public class Treap<K, V> {
         return result;
     }
 
-// REMOVE LATER KEEPING FOR DEBUGGING PURPOSES
-
-
-    // countNodes() - helper method for size()
-    /* recursively counts all nodes
-    private int countNodes(TNode node) {
-        // if node is null, return 0
-        if (node == null)
-            return 0;
-
-        // count this node + all nodes on left + all nodes on right
-        return 1 + countNodes(node.getLeft()) + countNodes(node.getRight());
-    }
-*/
     // heightHelper() - recursive helper for height()
     private int heightHelper(TNode node) {
         // empty tree has height -1
@@ -426,7 +431,15 @@ public class Treap<K, V> {
     /* == Public Functions == */
 
 
-    /* put() - inserts a new key-value pair, or updates the value if the key already exists
+    // inOrderEntries() - returns a list of key-value pairs in sorted order
+    public List<Map.Entry<K, V>> inOrderEntries() {
+        List<Map.Entry<K, V>> result = new ArrayList<>();
+        inOrderEntriesHelper(root, result);
+        return result;
+    }
+
+
+    /* put() inserts a new key-value pair, or updates the value if the key already exists
      * Returns:
      * - null if the key was new
      * - the old value if the key already existed
