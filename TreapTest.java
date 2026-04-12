@@ -3,8 +3,8 @@ import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.Collections;
+
 
 public class TreapTest {
     // treap used in all tests, integer keys and string values
@@ -161,6 +161,15 @@ public class TreapTest {
         assertEquals(1, treap.size());
     }
 
+    @Test
+    public void testRemoveReturnsDeletedValue() {
+        treap.insert(5, "five");
+
+        assertEquals("five", treap.remove(5));
+        assertNull(treap.get(5));
+        assertEquals(0, treap.size());
+    }
+
     // ---- height() tests ----
     @Test
     public void testHeightEmptyTreap() {
@@ -271,9 +280,8 @@ public class TreapTest {
     }
 
     @Test
-    public void testLastKeyOnEmptyTreap() {
-        // should return null and not crash
-        assertNull(treap.lastKey());
+    public void testInOrderKeysOnEmptyTreap() {
+        assertEquals(Collections.emptyList(), treap.inOrderKeys());
     }
 
     @Test
@@ -314,5 +322,26 @@ public class TreapTest {
         System.out.println(treap2); // Should print the same tree each time, as we have fixed the seed
         assertEquals(1, treap2.firstKey());
         assertEquals(30, treap2.lastKey());
+    }
+
+    // --- null key tests ---
+    @Test
+    public void testInsertNullKeyThrows() {
+        assertThrows(IllegalArgumentException.class, () -> treap.insert(null, "x"));
+    }
+
+    @Test
+    public void testGetNullKeyThrows() {
+        assertThrows(IllegalArgumentException.class, () -> treap.get(null));
+    }
+
+    @Test
+    public void testContainsNullKeyThrows() {
+        assertThrows(IllegalArgumentException.class, () -> treap.containsKey(null));
+    }
+
+    @Test
+    public void testRemoveNullKeyThrows() {
+        assertThrows(IllegalArgumentException.class, () -> treap.remove(null));
     }
 }
