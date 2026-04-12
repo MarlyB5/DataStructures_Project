@@ -425,47 +425,68 @@ public class Treap<K, V> {
 
     /* == Public Functions == */
 
-    //Wrapper for insert() - makes testing cleaner
-    public void put(K key, V value) {
-       insert(key, value);
-    }
-    /* Inserts the value into the Treap at the specified key */
-    public void insert(K key, V value) {
+
+    /* put() - inserts a new key-value pair, or updates the value if the key already exists
+     * Returns:
+     * - null if the key was new
+     * - the old value if the key already existed
+     */
+    public V put(K key, V value) {
+        // reject null keys before doing anything else
         validate(key);
+
+        // search for the key first
         SearchResult result = search(key);
 
-        // Node already exists; update it
+        // if the key already exists, update the value and return the old one
         TNode existingNode = result.getNode();
         if (existingNode != null) {
+            V oldValue = existingNode.getValue();
             existingNode.setValue(value);
-            return;
+            return oldValue;
         }
-
-        // Create a new node, respecting ONLY the binary tree ordering
+        // key does not exist, so create a brand-new node
         TNode node = new TNode();
         TNode parent = result.getParentNode();
+
         node.setKey(key);
         node.setValue(value);
+
+        // attach the new node in BST position based on the key
         if (parent == null) {
-            root = node;
+            root = node;   // tree was empty
         } else if (result.isLeftChild()) {
             parent.setLeft(node);
         } else {
             parent.setRight(node);
         }
 
-        // Now we check heap invariant by repeatedly rotating the subtree as long as child priority > parent priority
-        while (parent != null && (node.getPriority() > parent.getPriority())) {
+        // rotate the node upward while heap priority is violated
+        while (parent != null && node.getPriority() > parent.getPriority()) {
             if (parent.getLeft() == node) {
-                // Node is on the left, so rotate right
+                // node is a left child, so rotate right
                 rotateRight(parent);
             } else {
-                // Node is on the right, so rotate left
+                // node is a right child, so rotate left
                 rotateLeft(parent);
             }
+
+            // after rotation, check the node's new parent
             parent = node.getParent();
         }
+
+        // a new node was inserted, so size increases
         size++;
+
+        // return null because there was no previous value for this key
+        return null;
+    }
+
+    /* insert() - compatibility wrapper
+      now uses put() internally
+     */
+    public void insert(K key, V value) {
+        put(key, value);
     }
 
     // get() - returns value if found, null if not
