@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 
 public class TreapTest {
@@ -311,6 +313,25 @@ public class TreapTest {
 
         assertEquals(Arrays.asList(1, 2, 3), treap.inOrderKeys());
 
+    }
+    @Test
+    public void testInOrderEntriesReturnsSortedEntries() {
+        treap.insert(3, "three");
+        treap.insert(1, "one");
+        treap.insert(2, "two");
+
+        List<Map.Entry<Integer, String>> entries = treap.inOrderEntries();
+
+        assertEquals(3, entries.size());
+
+        assertEquals(Integer.valueOf(1), entries.get(0).getKey());
+        assertEquals("one", entries.get(0).getValue());
+
+        assertEquals(Integer.valueOf(2), entries.get(1).getKey());
+        assertEquals("two", entries.get(1).getValue());
+
+        assertEquals(Integer.valueOf(3), entries.get(2).getKey());
+        assertEquals("three", entries.get(2).getValue());
     }
 
     @Test
