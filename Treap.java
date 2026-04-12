@@ -212,18 +212,12 @@ public class Treap<K, V> {
                         rightTreeAdjust = adjust;
                         leftTreeAdjust = -adjust;
                     } else {
-                        if (rootSpacing == 1) {
-                            allTreeLines.add(new TreeLine("/ \\", -1, 1));
-                            rightTreeAdjust = 2;
-                            leftTreeAdjust = -2;
-                        } else {
-                            for (int i = 1; i < rootSpacing; i += 2) {
-                                String branches = "/" + spaces(i) + "\\";
-                                allTreeLines.add(new TreeLine(branches, -((i + 1) / 2), (i + 1) / 2));
-                            }
-                            rightTreeAdjust = (rootSpacing / 2) + 1;
-                            leftTreeAdjust = -((rootSpacing / 2) + 1);
+                        for (int i = 1; i < rootSpacing; i += 2) {
+                            String branches = "/" + spaces(i) + "\\";
+                            allTreeLines.add(new TreeLine(branches, -((i + 1) / 2), (i + 1) / 2));
                         }
+                        rightTreeAdjust = (rootSpacing / 2) + 1;
+                        leftTreeAdjust = -((rootSpacing / 2) + 1);
                     }
                 }
 
@@ -347,7 +341,7 @@ public class Treap<K, V> {
         // goes left first (smaller keys)
         inOrderHelper(node.getLeft() , result);
 
-        // store current noes key
+        // store current nodes key
         result.add(node.getKey());
         // then goes right (larger keys)
         inOrderHelper(node.getRight(), result);
@@ -431,11 +425,20 @@ public class Treap<K, V> {
     /* == Public Functions == */
 
 
-    // inOrderEntries() - returns a list of key-value pairs in sorted order
+    // inOrderEntries returns a list of key-value pairs in sorted order
     public List<Map.Entry<K, V>> inOrderEntries() {
         List<Map.Entry<K, V>> result = new ArrayList<>();
         inOrderEntriesHelper(root, result);
         return result;
+    }
+
+
+    /* getOrDefault returns the value for the given key,
+     * or returns the provided default value if the key does not exist
+     */
+    public V getOrDefault(K key, V defaultValue) {
+        validate(key);
+        return containsKey(key) ? get(key) : defaultValue;
     }
 
 
@@ -519,7 +522,7 @@ public class Treap<K, V> {
     // isEmpty() - returns true if tree has no nodes
     public boolean isEmpty() {
         // if root is null, tree is empty
-        return root == null;
+        return size == 0;
     }
 
     // size() - returns how many nodes in tree
@@ -528,7 +531,15 @@ public class Treap<K, V> {
         return size;
     }
 
+    //clear() - removes all nodes from the tree
+    public void clear(){
+        root = null;
+        size = 0;
+    }
+
+
     // inOrder() - prints keys in sorted order (smallest to largest)
+    // debug method
     public void inOrder() {
     System.out.println(inOrderKeys());
      }

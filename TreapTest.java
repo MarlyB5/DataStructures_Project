@@ -365,4 +365,47 @@ public class TreapTest {
     public void testRemoveNullKeyThrows() {
         assertThrows(IllegalArgumentException.class, () -> treap.remove(null));
     }
+
+    //--clear() tests---
+    @Test
+    public void testClearMakesTreapEmpty() {
+        treap.put(5, "five");
+        treap.put(3, "three");
+        treap.put(7, "seven");
+
+        treap.clear();
+
+        assertTrue(treap.isEmpty());
+        assertEquals(0, treap.size());
+    }
+
+    @Test
+    public void testClearOnEmptyTreap() {
+        treap.clear();
+
+        assertTrue(treap.isEmpty());
+        assertEquals(0, treap.size());
+    }
+
+    @Test
+    public void testClearResetsLookupMethods() {
+        treap.put(5, "five");
+        treap.clear();
+
+        assertNull(treap.get(5));
+        assertNull(treap.firstKey());
+        assertNull(treap.lastKey());
+    }
+
+
+    @Test
+    public void testClearRemovesAllKeys() {
+        treap.put(5, "five");
+        treap.put(3, "three");
+
+        treap.clear();
+
+        assertEquals(Collections.emptyList(), treap.inOrderKeys());
+    }
+
 }
