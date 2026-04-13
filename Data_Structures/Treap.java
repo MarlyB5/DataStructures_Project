@@ -1,7 +1,9 @@
+package Data_Structures;
+
 import java.util.*;
 
 /* IMPORTANT INFO
- * 1. The Treap is a max-heap, meaning the highest priority is at the root
+ * 1. The TreapCode.Treap is a max-heap, meaning the highest priority is at the root
  * 2. Keys determine the binary search tree placements
  * 3. Priority will determine whether the rotations are needed to maintain the heap invariant
  * 4. The rotation algorithm is described here: https://en.wikipedia.org/wiki/Tree_rotation#Inorder_invariance
@@ -266,7 +268,7 @@ public class Treap<K, V> {
 
     /* == Constructors == */
 
-    /* Constructs an empty Treap with the given key comparator */
+    /* Constructs an empty TreapCode.Treap with the given key comparator */
     public Treap(Comparator<K> keyComp) {
         if (keyComp == null) {
             throw new IllegalArgumentException("Key comparator cannot be null");
@@ -277,7 +279,7 @@ public class Treap<K, V> {
         size = 0;
     }
 
-    /* Constructs a Treap with the given RNG seed for priority generation */
+    /* Constructs a TreapCode.Treap with the given RNG seed for priority generation */
     public Treap(Comparator<K> keyComp, long seed) {
         if (keyComp == null) {
             throw new IllegalArgumentException("Key comparator cannot be null");
