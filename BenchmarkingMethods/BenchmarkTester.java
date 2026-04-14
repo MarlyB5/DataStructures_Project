@@ -1,6 +1,7 @@
 
 package BenchmarkingMethods;
 
+import BenchMarkingSorting.SortBenchmarkTests;
 import Data_Structures.AVLTreeMap;
 import Data_Structures.Treap;
 
@@ -8,7 +9,7 @@ import java.util.*;
 
 public class BenchmarkTester {
 
-    private static final int[] SIZES = {1, 10, 100, 250, 500, 750, 1000, 2500, 5000, 7500, 10000};
+    private static final int[] SIZES = { 100, 250, 500, 750, 1000, 2500, 5000, 7500, 10000};
     private static final String[] INPUT_TYPES = {"random", "sorted", "reverse", "partial"};
 
     private static final int RUNS = 5;
@@ -40,6 +41,32 @@ public class BenchmarkTester {
                 results.add(runSearchHit("TreeMap", type, size, data));
                 results.add(runSearchMiss("TreeMap", type, size, data, missing));
                 results.add(runRemove("TreeMap", type, size, data));
+
+
+                // TREAP
+                results.add(runInsert("Treap", type, size, data));
+                results.add(runSearchHit("Treap", type, size, data));
+                results.add(runSearchMiss("Treap", type, size, data, missing));
+                results.add(runRemove("Treap", type, size, data));
+
+                // AVL
+                results.add(runInsert("AVL", type, size, data));
+                results.add(runSearchHit("AVL", type, size, data));
+                results.add(runSearchMiss("AVL", type, size, data, missing));
+                results.add(runRemove("AVL", type, size, data));
+
+                // TreeMap
+                results.add(runInsert("TreeMap", type, size, data));
+                results.add(runSearchHit("TreeMap", type, size, data));
+                results.add(runSearchMiss("TreeMap", type, size, data, missing));
+                results.add(runRemove("TreeMap", type, size, data));
+
+                // SORTING
+                results.add(runSorting("TreapSort", type, size, data));
+                results.add(runSorting("PQSort", type, size, data));
+                results.add(runSorting("QuickSort", type, size, data));
+                results.add(runSorting("MergeSort", type, size, data));
+                results.add(runSorting("JavaSort", type, size, data));
             }
         }
 
@@ -49,6 +76,17 @@ public class BenchmarkTester {
         for (BenchmarkResults r : results) {
             System.out.println(r.toCSV());
         }
+    }
+
+    // SORTING
+    private static BenchmarkResults runSorting(String algorithm, String type, int size, List<Integer> data) {
+        long total = 0;
+
+        for (int i = 0; i < RUNS; i++) {
+            total += SortBenchmarkTests.benchmarkSorting(algorithm, data);
+        }
+
+        return new BenchmarkResults("Sorting", algorithm, type, size, total / RUNS);
     }
 
     // INSERT
@@ -190,6 +228,7 @@ public class BenchmarkTester {
                 total += (System.nanoTime() - start);
             }
         }
+
 
         return new BenchmarkResults(structure, "remove", type, size, total / RUNS);
     }
