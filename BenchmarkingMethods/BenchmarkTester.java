@@ -61,12 +61,6 @@ public class BenchmarkTester {
                 results.add(runSearchMiss("TreeMap", type, size, data, missing));
                 results.add(runRemove("TreeMap", type, size, data));
 
-                // SORTING
-                results.add(runSorting("TreapSort", type, size, data));
-                results.add(runSorting("PQSort", type, size, data));
-                results.add(runSorting("QuickSort", type, size, data));
-                results.add(runSorting("MergeSort", type, size, data));
-                results.add(runSorting("JavaSort", type, size, data));
             }
         }
 
@@ -78,16 +72,6 @@ public class BenchmarkTester {
         }
     }
 
-    // SORTING
-    private static BenchmarkResults runSorting(String algorithm, String type, int size, List<Integer> data) {
-        long total = 0;
-
-        for (int i = 0; i < RUNS; i++) {
-            total += SortBenchmarkTests.benchmarkSorting(algorithm, data);
-        }
-
-        return new BenchmarkResults("Sorting", algorithm, type, size, total / RUNS);
-    }
 
     // INSERT
     private static BenchmarkResults runInsert(String structure, String type, int size, List<Integer> data) {

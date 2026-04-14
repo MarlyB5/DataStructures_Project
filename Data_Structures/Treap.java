@@ -84,7 +84,7 @@ public class Treap<K, V> {
         private final boolean squareBranches = true;
         private final boolean lrAgnostic = false;
         private final int hspace = 2;
-        //private int tspace = 1;
+        //private int space = 1;
 
         public TreapPrinter() {
         }
